@@ -1,0 +1,85 @@
+<h1>GeekTwitter</h1>
+<h3>Tweet詳細</h3>
+<div class="tweet">
+  <p><%= @tweet.body %></p>
+  投稿日時  <%= @tweet.created_at.strftime("%Y年%m月%d日 %H:%M:%S") %>
+  <p><%= @tweet.name %></p>
+  種類:    <span><%= @tweet.type.name %></span>
+  <p><%= @tweet.cost %></p>
+
+  <p><%= @tweet.evaluation %></p>
+</div>
+    <% if user_signed_in? %>
+      <% if current_user.already_liked?(@tweet) %>
+        <%= link_to tweet_like_path(id: @tweet.id, tweet_id: @tweet.id), data: { turbo_method: :delete } do %>
+            <i class="fas fa-heart"></i><%= @tweet.likes.count %>
+        <% end %>
+      <% else %>
+        <%= link_to tweet_likes_path(id: @tweet.id, tweet_id: @tweet.id), data: { turbo_method: :tweet }  do %>
+            <i class="far fa-heart"></i><%= @tweet.likes.count %>
+        <% end %>
+      <% end %>
+    <% else %>
+        <i class="far fa-heart"></i><%= @tweet.likes.count %>
+    <% end %>
+  <%= link_to "編集する", edit_tweet_path(@tweet.id) %>
+</div>
+
+<div id='map'></div>
+
+<style>
+#map {
+  height: 600px;
+  width: 100%;
+}
+</style>
+
+<!-- js部分 -->
+<script>
+//初期マップの設定
+let map
+let marker
+function initMap(){
+  geocoder = new google.maps.Geocoder()
+
+  map = new google.maps.Map(document.getElementById('map'), {
+    center:  {lat: <%= @tweet.lat %>, lng: <%= @tweet.lng %>},
+    zoom: 15,
+  });
+
+   marker = new google.maps.Marker({
+    position:  {lat: <%= @tweet.lat %>, lng: <%= @tweet.lng %>},
+    map: map
+  });
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['YOUR_API_KEY'] %>&callback=initMap" async defer></script>
+<h2>いいねしたユーザー</h2>
+<% @tweet.liked_users.each do |user| %>
+  <li><%= user.email %></li>
+<% end %>
+
+<div class="comment-wrapper">
+  <p>コメント一覧</p>
+  <% @comments.each do |c| %>
+    <div>
+      <%= c.user.email unless c.user.blank? %>
+      <br>
+      <%= c.content %>
+    </div>
+      <br>
+  <% end %>
+
+  <% if user_signed_in? %>
+    <%= form_with(model: [@tweet, @comment], local: true) do |f| %>
+      <%= f.text_area :content %>
+      <%= button_tag type: "submit" do %>
+        <i class="far fa-comments"></i> コメントする
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+
+
+<%= link_to "Tweet一覧に戻る", tweets_path %>
