@@ -1,0 +1,55 @@
+body {
+    font-family: "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ",
+      Meiryo, "ＭＳ Ｐゴシック", sans-serif;
+  }
+  header {
+    background-color: #000000;
+    height: 120px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header a {
+    color: white; 
+    text-decoration: none; 
+  }
+  header h1 {
+    color: white;
+    margin-left: 20px;
+  }
+  .header-list {
+    display: flex;
+    align-items: center;
+  }
+  header ul {
+    display: flex;
+  }
+  header li {
+    list-style: none;
+    margin-right: 40px;
+  }
+.tweets-container {
+  display: flex;
+  flex-wrap: wrap;    /* 複数行に折り返す */
+  gap: 20px;          /* 投稿間の隙間 */
+  justify-content: flex-start; /* 投稿自体は左寄せ */
+  width: fit-content; /* コンテンツ幅に合わせる */
+  margin-left: auto;  /* 右に寄せる */
+  padding: 180px;              /* 余白指定 */
+  text-align:  center;        /* 中央寄せ */
+  background-color:  #ddd;    /* 背景色指定 */
+}
+  
+  .tweet {
+    flex: 0 0 calc(33.33% - 20px); /* 3つ並べるための幅調整 */
+  }
+  .wrapper {
+    display: flex;
+    justify-content: flex-end; /* 内部のtweets-containerを右寄せ */
+  }
+  .img-resize {
+    border-radius: 20px; /* 角を10pxの丸みで丸くする */
+object-fit: contain;
+}
+

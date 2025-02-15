@@ -10,4 +10,7 @@ Rails.application.routes.draw do
   get 'hello/index' => 'hello#index'
   get 'hello/link' => 'hello#link'
   root 'hello#index'
+  devise_scope :user do
+    get '/users/sign_out' => 'devise/sessions#destroy'
+  end
 end

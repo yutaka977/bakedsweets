@@ -1,0 +1,112 @@
+.slidebox{
+    height: 800px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto;
+    margin-top: 0px;
+}
+.item1{
+    opacity: 0 ;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    left: 0%;
+    -webkit-animation: anime 25s 0s infinite;
+    animation: anime 25s 0s infinite;
+}
+.item1:nth-last-of-type(2){
+    -webkit-animation-delay: 5s;
+    animation-delay: 5s;
+}
+.item1:nth-last-of-type(3){
+    -webkit-animation-delay: 10s;
+    animation-delay: 10s;
+}
+.item1:nth-last-of-type(4){
+    -webkit-animation-delay: 15s;
+    animation-delay: 15s;
+}
+.item1:nth-last-of-type(5){
+    -webkit-animation-delay: 20s;
+    animation-delay: 20s;
+}
+@keyframes anime{
+    0%{
+    opacity: 0;
+    }
+    30%{
+    opacity: 1;
+    }
+    35%{
+    opacity: 1;
+    }
+    50%{
+    opacity: 0;
+    z-index: 9;
+    }
+    100%{
+    opacity: 0;
+    }
+}
+@-webkit-keyframes anime{
+    0%{
+    opacity: 0;
+    }
+    30%{
+    opacity: 1;
+    }
+    35%{
+    opacity: 1;
+    }
+    50%{
+    opacity: 0;
+    z-index: 9;
+    }
+    100%{
+    opacity: 0;
+    }
+}
+
+.home{
+    height: 55%;
+    width: 55%;
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto;
+    top: 0px
+    
+}
+
+body {
+    font-family: "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ",
+      Meiryo, "ＭＳ Ｐゴシック", sans-serif;
+  }
+  header {
+    background-color: #000000;
+    height: 120px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header a {
+    color: white; 
+    text-decoration: none; 
+  }
+  header h1 {
+    color: white;
+    margin-left: 20px;
+  }
+  .header-list {
+    display: flex;
+    align-items: center;
+  }
+  header ul {
+    display: flex;
+  }
+  header li {
+    list-style: none;
+    margin-right: 40px;
+  }

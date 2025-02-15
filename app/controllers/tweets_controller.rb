@@ -4,15 +4,13 @@ class TweetsController < ApplicationController
   def index
     
     @tweets =  Tweet.all #投稿一覧表示用（もともとある前提）
-    if params[:type_ids]
-      @tweets = []
-      params[:type_ids].each do |key, value|      
-        @tweets += Type.find_by(name: key).tweets if value == "1"
-      end
-      @tweets.uniq!
-    end        
-    @q = Tweet.ransack(params[:q]) #追記
-    @tweets= @q.result #追記
+    @q = Tweet.ransack(params[:q])
+    @tweets = @q.result(distinct: true) # 重複を避けるために distinct を追加
+
+  # タイプ ID フィルタリング
+    if params[:q].present? && params[:q][:type_id_in].present?
+      @tweets = @tweets.where(type_id: params[:q][:type_id_in])
+    end
     if params[:type]
       Type.create(name: params[:type])
     end
@@ -65,6 +63,6 @@ class TweetsController < ApplicationController
 
   private
   def tweet_params
-    params.require(:tweet).permit(:body,:name,:cost,:type,:evaluation,:image,:lat,:lng,:type_id)
+    params.require(:tweet).permit(:body,:name,:cost,:type,:evaluation, :taste, :evaluationcost,:access,:lat,:lng,:type_id, images: [])
   end
 end

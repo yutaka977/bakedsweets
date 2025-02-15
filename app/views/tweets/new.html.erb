@@ -2,8 +2,14 @@
 <h3>新規投稿</h3>
 <%= form_for @tweet do |f| %>
   <div class="field">
-    <%= f.label :店名 %>
-    <%= f.text_field :name,size: 25 %>
+        <div class="actions">
+    <%= f.label :body,"店名" %>
+    <%= f.text_field :body,id:"outputBox" %>
+    <%= f.label :lat,"緯度" %>
+    <%= f.text_field :lat,:value =>"緯度", id: :lat %>
+    <%= f.label :lng,"経度" %>
+    <%= f.text_field :lng,:value =>"経度", id: :lng %>
+  </div>
     <br>
     <%= f.label :価格 %>
     <%= f.text_field :cost,size: 25 ,placeholder:"半角数字を入力してください"%>
@@ -18,20 +24,40 @@
  </div>
     <br>
     <%= f.label :評価 %>
+    <br>
+<div>
+  <%= f.label :美味しさ %>
+  <br>
+  1<%= f.range_field :taste, min: 1, max: 5,step: 0.5 ,value:3, id: 'range-taste' %>5
+  <span id="current-value-taste"></span>
+</div>
+
+<div>
+  <%= f.label :価格 %>
+  <br>
+  1<%= f.range_field :evaluationcost,min: 1, max: 5,step: 0.5 ,value:3, id: 'range-evaluationcost' %>5
+  <span id="current-value-evaluationcost"></span>
+</div>
+
+<div>
+  <%= f.label :アクセスの良さ %>
+  <br>
+  1<%= f.range_field :access, min: 1, max: 5,step: 0.5 ,value:3, id: 'range-access' %>5
+  <span id="current-value-access"></span>
+</div>
+
+
+              
+    <br>
     <%= f.text_field :evaluation,size: 25 %>
   </div>
   <div class="field">
     <%= f.label :写真 %>
-    <%= f.file_field :image %>
+    <%= f.file_field :images, multiple: true %>
+
+
   </div>
-    <div class="actions">
-    <%= f.label :body,"店名" %>
-    <%= f.text_field :body %>
-    <%= f.label :lat,"緯度" %>
-    <%= f.text_field :lat,:value =>"緯度", id: :lat %>
-    <%= f.label :lng,"経度" %>
-    <%= f.text_field :lng,:value =>"経度", id: :lng %>
-  </div>
+
 
   <%= f.submit "投稿する" %>
 <% end %>
@@ -42,6 +68,7 @@
 <h2>Map</h2>
 <p>店名を入力し、検索を押すと位置情報の登録ができます。<p>
 <input id="address" type="textbox" placeholder="店名を入力してください">
+
 <input type="button" value="検索" onclick="codeAddress()">
 <p>マーカーをドラック＆ドロップで位置の調整ができます。<p>
 <div id='map'></div>
@@ -106,7 +133,53 @@ function codeAddress(){
   });   
 }
 
+
+
+</script>
+
+<script type="text/javascript">
+
+document.addEventListener("turbo:load", () => {
+  // 各range_fieldと対応する表示要素を設定
+  const fields = [
+
+    { id: 'range-taste', spanId: 'current-value-taste' },
+    { id: 'range-evaluationcost', spanId: 'current-value-evaluationcost' },
+    { id: 'range-access', spanId: 'current-value-access' }
+  ];
+
+  // 汎用的に値を更新する関数
+  const setFieldValue = (fieldId, spanId) => {
+    const fieldElem = document.getElementById(fieldId);
+    const spanElem = document.getElementById(spanId);
+
+    const updateValue = () => {
+      spanElem.innerText = `${fieldElem.value}`;
+    };
+
+    // イベントリスナーの追加
+    fieldElem.addEventListener('input', updateValue);
+
+    // 初期値の設定
+    updateValue();
+  };
+
+  // 各fieldについて処理を適用
+  fields.forEach(({ id, spanId }) => setFieldValue(id, spanId));
+});
+
+
+  const inputBox = document.getElementById("address");
+  const outputBox = document.getElementById("outputBox");
+  if (outputBox.value === "") {
+  inputBox.addEventListener("input", function () {
+    outputBox.value = inputBox.value;
+  });
+};
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['YOUR_API_KEY'] %>&callback=initMap" async defer></script>
 
 <%= link_to "投稿一覧に戻る", tweets_path %>
+
+
+

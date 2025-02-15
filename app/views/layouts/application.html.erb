@@ -1,16 +1,37 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Bakedsweets</title>
+    <title>Geektwitter</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <script src="https://kit.fontawesome.com/be57356b9b.js" crossorigin="anonymous"></script>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+<%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= yield %>
+    <header>
+
+    <a href="/hello/link">
+    <%= image_tag 'home.png' , class:'home'%>
+    </a>
+      <div class="header-list">
+      <ul>
+        <li><%= link_to "ホーム", hello_link_path %></li>
+        <li><%= link_to "新規投稿",new_tweet_path %></li>
+        <li><%= link_to "投稿一覧",tweets_path %></li>
+              <% if user_signed_in? %>
+          <li><%= link_to "LOGOUT", destroy_user_session_path, method: :delete %><li>
+        <% else %>
+          <li><%= link_to "SIGN UP", new_user_registration_path %><li>
+          <li><%= link_to "LOGIN", new_user_session_path %><li>
+        <% end %>
+      </ul>
+      </div>
+    </header>
+    <main>
+      <%= yield %>
+    </main>
   </body>
 </html>

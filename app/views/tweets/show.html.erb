@@ -22,7 +22,10 @@
     <% else %>
         <i class="far fa-heart"></i><%= @tweet.likes.count %>
     <% end %>
+    <% if user_signed_in? && current_user.id == @tweet.user_id %>
   <%= link_to "編集する", edit_tweet_path(@tweet.id) %>
+        <%= link_to "削除する", tweet_path(@tweet.id), data: { turbo_method: :delete }  %>
+      <% end %> 
 </div>
 
 <div id='map'></div>
@@ -56,7 +59,7 @@ function initMap(){
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['YOUR_API_KEY'] %>&callback=initMap" async defer></script>
 <h2>いいねしたユーザー</h2>
 <% @tweet.liked_users.each do |user| %>
-  <li><%= user.email %></li>
+  <li><%= user.name %></li>
 <% end %>
 
 <div class="comment-wrapper">

@@ -1,30 +1,31 @@
-<%= link_to "新規投稿ページへ", new_tweet_path %>
-<h1>GeekTwitter</h1>
-<%= button_to 'ログアウト', destroy_user_session_path, method: :delete %>
-<h3>Tweet一覧</h3>
 <h3>投稿検索</h3>
 <%= search_form_for @q  do |f| %>
-    <%= f.label :name_cont, '店名' %>
-    <%= f.search_field :name_cont %>
-    <br>
-    <%= f.label :type_cont, '種類' %>
-    <%=  f.collection_select(:type_id, Type.all, :id, :name_cont, { prompt: '選択してください'}, { class: 'form-select'})  %> 
-
-    
-    
-    <br>
+    <%= f.label :body_cont, '店名' %>
+    <%= f.search_field :body_cont %>
+    <%= f.label :type_id_eq, '種類' %>
+    <%= f.collection_select(:type_id_eq, Type.all, :id, :name, { prompt: '選択してください' }, { class: 'form-select' }) %>
     <%= f.submit "検索" %></p>
 <% end %>
-<%= link_to "新規投稿へ", new_tweet_path %>
+<h3>投稿一覧</h3>
+<div class="wrapper">
 <div class="tweets-container">
   <% @tweets.reverse_each do |t| %>
-    <div class="tweet">
-        <% if t.image.attached? %>
-            <%= image_tag t.image, size: '250x200'%>
+    <div class="tweet">  
+        <% if t.images.attached? %>
+          <% image = t.images.first %>
+      <%= link_to  tweet_path(t.id) do %>
+      <div class='image-field'><%= image_tag image,width: 330, height: 240, 
+    class: "img-resize" %></div>
         <% end %>
-      <%= t.user.email %> 
-      <%= t.body %>
-    <% if user_signed_in? %>
+        <% end %>
+      種類: <%= t.type.name %>
+      <br>
+      価格: <%= t.cost %>円
+      <br>
+      美味しさ:<%= t.taste %>
+      <br>
+いいね 
+          <% if user_signed_in? %>
       <% if current_user.already_liked?(t) %>
         <%= link_to tweet_like_path(id: t.id, tweet_id: t.id), data: { turbo_method: :delete } do %>
             <i class="fas fa-heart"></i><%= t.likes.count %>
@@ -37,17 +38,13 @@
     <% else %>
         <i class="far fa-heart"></i><%= t.likes.count %>
     <% end %>
-      投稿日時  <%= t.created_at.strftime("%Y年%m月%d日 %H:%M:%S")  %> 
-      店名: <%= t.name %>
-      種類: <%= t.type.name %>
-      価格: <%= t.cost %>
-      評価: <%= t.evaluation %>
-      <%= link_to "詳細へ", tweet_path(t.id) %> 
     </div>
-    <%= link_to "編集する", edit_tweet_path(t.id) %>
-    <%= button_to "削除する", tweet_path(t.id), method: :delete %> 
   <% end %>
 </div>
+</div>
+
+
+
 <div id='map'></div>
 
 <style>
@@ -107,10 +104,4 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['YOUR_API_KEY'] %>&callback=initMap" async defer></script>
 
 
-<%= form_tag({controller:"tweets",action:"index"}, method: :get) do %>
-    <% Type.all.each do |t| %>
-        <li><%= check_box :type_ids, t.name %><%= t.name %></li>
-    <% end %>
-    <%= submit_tag '検索' %>
-<% end %>
 
