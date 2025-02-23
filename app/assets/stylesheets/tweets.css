@@ -2,6 +2,10 @@ body {
     font-family: "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ",
       Meiryo, "ＭＳ Ｐゴシック", sans-serif;
   }
+
+
+
+
   header {
     background-color: #000000;
     height: 120px;
@@ -29,27 +33,340 @@ body {
     list-style: none;
     margin-right: 40px;
   }
-.tweets-container {
-  display: flex;
-  flex-wrap: wrap;    /* 複数行に折り返す */
-  gap: 20px;          /* 投稿間の隙間 */
-  justify-content: flex-start; /* 投稿自体は左寄せ */
-  width: fit-content; /* コンテンツ幅に合わせる */
-  margin-left: auto;  /* 右に寄せる */
-  padding: 180px;              /* 余白指定 */
-  text-align:  center;        /* 中央寄せ */
-  background-color:  #ddd;    /* 背景色指定 */
-}
-  
-  .tweet {
-    flex: 0 0 calc(33.33% - 20px); /* 3つ並べるための幅調整 */
-  }
-  .wrapper {
+
+
+
+
+
+  .tweets-container {
     display: flex;
-    justify-content: flex-end; /* 内部のtweets-containerを右寄せ */
+    flex-wrap: wrap;    /* 複数行に折り返す */
+    gap: 20px;          /* 投稿間の隙間 */
+    justify-content: flex-start; /* 投稿自体は左寄せ */
+    width: auto; /* コンテンツ幅に合わせる */
+    padding: 180px;              /* 余白指定 */
+    text-align:  left;        /* 文字左寄せ */
+    background-color:  #ddd;    /* 背景色指定 */
   }
+    .tweet {
+      flex: 0 0 calc(33.33% - 20px); /* 3つ並べるための幅調整 */
+    }
+  
+
   .img-resize {
     border-radius: 20px; /* 角を10pxの丸みで丸くする */
 object-fit: contain;
+transition: 0.6s ease;
 }
 
+  .img-resize:hover {
+    transition: 0.6s ease;
+    filter: brightness(0.6);
+  }
+
+  .meta-info {
+    display: flex;
+    flex-direction: column;
+    
+    gap: 0px; /* 各項目の間隔 */
+    border-top: 1px solid #ccc; /* 上のライン */
+  }
+  
+  .meta-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    padding: 8px 0; /* 上下の余白 */
+    border-bottom: 1px solid #ccc; /* 各項目の下に線を引く */
+  }
+  
+  .meta-item:last-child {
+    border-bottom: none; /* 最後の項目の線を消す */
+  }
+  
+  .meta-item strong {
+    width: 80px; /* ラベルの幅を統一 */
+    min-width: 80px; /* 幅を固定して崩れを防ぐ */
+    display: inline-block;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .meta-item span {
+    flex-grow: 1; /* 値の部分を広げる */
+    text-align: left; /* 左寄せ */
+    color: #555;
+  }
+
+  .star-rating {
+    display: flex;
+    align-items: center;
+    gap: 3px; /* 星の間隔を調整 */
+  }
+  
+  .star {
+    width: 20px; /* 星のサイズを統一 */
+    height: auto;
+  }
+  
+  .rating-score {
+    font-size: 14px;
+    color: #666;
+    margin-left: 5px;
+  }
+
+/* 検索フォーム全体 */
+.search-container {
+  display: flex;
+  justify-content: center; /* 中央揃え */
+  align-items: center;
+  margin: 20px auto;
+  width: 480px; /* 検索フォームの幅 */
+  background: #fff;
+
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+
+  
+}
+
+/* フォーム全体 */
+.search-form {
+  background-color: #007bff;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 36.3px;
+  border-radius: 5px;
+}
+
+/* カテゴリ選択 */
+/* カテゴリー選択のコンテナ */
+.search-category {
+  flex: 0.8; /* 幅を調整 */
+  position: relative; /* ▼を絶対配置するための基準 */
+}
+
+/* プルダウン（セレクトボックス）のスタイル */
+/* 通常時のセレクトボックス */
+.form-select {
+  border: 1px solid #ccc; /* 初期の枠線の色 */
+  padding: 9px 35px 9px 10px; /* 右側に余白を作る（▼を配置するため） */
+  border-radius: 5px 0px 0px 5px;
+  background-color: #f8f8f8;
+  font-size: 14px;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: border 0.3s ease, box-shadow 0.3s ease; /* なめらかな変化 */
+}
+
+/* フォーカス時の枠線の色変更 */
+.form-select:focus {
+  border: 2px solid #ff9900; /* Amazonのオレンジ色 */
+  box-shadow: 0px 0px 5px rgba(255, 153, 0, 0.5); /* ぼんやりと光るエフェクト */
+  outline: none; /* デフォルトのフォーカス枠を消す */
+}
+
+
+/* ▼（逆三角形）のアイコン */
+.search-category::after {
+  content: "▼"; /* 矢印アイコン */
+  position: absolute;
+  top: 50%;
+  right: 12px; /* 右端に配置 */
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #666;
+  pointer-events: none; /* 矢印部分をクリック不可にする */
+}
+
+
+
+/* 検索ボックス */
+.search-box {
+  flex: 1; /* 幅を自動調整 */
+}
+
+/* 検索ボックスの通常時 */
+.search-input {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #ccc; /* 初期の枠線の色 */
+  border-radius: 0px;
+  font-size: 14px;
+  transition: border 0.3s ease, box-shadow 0.3s ease; /* なめらかな変化 */
+  outline: none; /* デフォルトのフォーカス枠を消す */
+  border-left: none;
+}
+
+/* フォーカス時（クリックしたとき）のスタイル */
+.search-input:focus {
+  border: 2px solid #ff9900; /* Amazon風のオレンジ色 */
+  box-shadow: 0px 0px 5px rgba(255, 153, 0, 0.5); /* ぼんやり光る */
+}
+
+
+/* 検索ボタン */
+
+.search-submit {
+  background-color: #ff9900;
+  color: white;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-submit:hover {
+  background-color: #e68a00;
+}
+
+
+/* 🔥 検索タブをクリックしたときに検索ボタンも光る */
+.search-container:focus-within .search-submit {
+  background-color: #ffac33; /* 明るいオレンジ */
+  box-shadow: 0px 0px 10px rgba(255, 172, 51, 0.8); /* 光るエフェクト */
+}
+
+
+.info-box {
+    width: 780px; /* 必要に応じて調整 */
+    height: 500px; /* 高さを自動調整 */
+    justify-content: center; /* 中央配置 */
+    background-image: url('<%= asset_path("showbackground.png") %>'); 
+    background-size: contain; /* 画像全体を表示 */
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: 'Arial', sans-serif;
+    background-color:#ebeae9;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.6); /* 影を強調 */
+    padding-top:50px;
+}
+
+
+.content-container {
+  background-color:#ff44ca;
+  display: flex;
+  /* 画像とテキストの高さを調整 */
+  width:687px;
+  height: 450px;
+  margin:0 auto;
+}
+
+
+.image-containershow {
+  background-color:#f6ee66;
+  flex: 1; /* 画像のスペースを広げる */
+  display: flex;
+  justify-content: flex-start; /* 左寄せ */
+  align-items: center;
+  padding: 20px;
+  width: 100%; /* 親要素いっぱいに表示 */
+}
+
+
+.tweet-image {
+  background-color:#44ff4b;
+
+
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+    width: 100%; /* 親要素にフィット */
+  height: auto; /* 縦横比を維持 */
+  max-width: 300px; /* 画像の最大幅を制限 */
+}
+
+
+.text-content {
+    margin-top: 20px;
+    flex: 1; /* 右側の幅 */
+    padding: 20px;
+    text-align: left; /* テキストを左寄せ */
+}
+
+
+
+
+
+.product-container {
+  display: flex;
+  width:auto;
+  margin:0 auto;
+  justify-content: center; /* 全体を中央に配置 */
+  align-items: flex-start; /* 高さは現状のままにする */
+}
+
+.thumbnail-container {
+  margin-top:20px;
+  display: flex;
+  flex-direction: column; /* 縦並び */
+  align-items: center; /* 中央揃え */
+  margin-right: 5px; 
+  margin-left:282px;
+}
+
+.thumbnail {
+  width: 80px; /* サムネイルの幅 */
+  height: 80px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.3s ease;
+}
+
+.thumbnail:hover {
+  border: 2px solid #007bff; /* ホバー時の枠色 */
+}
+
+.main-image-container {
+  flex: 1;
+}
+
+.main-image {
+  width: 400px; /* メイン画像の幅 */
+  height: auto;
+  object-fit: contain;
+}
+
+
+
+.image-gallery {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.showmap {
+  height: 300px;
+  width: 300px;
+  margin: 0 auto;
+  margin-top: 140px;
+}
+
+.details {
+    text-align: left;
+    margin-top: 20px;
+}
+
+.details p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.details a {
+    color: #a85e32;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.details a:hover {
+    text-decoration: underline;
+}

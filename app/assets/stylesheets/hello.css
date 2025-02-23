@@ -1,3 +1,20 @@
+/* 初期の黒いオーバーレイ（ヘッダーを除外） */
+.overlay {
+    position: fixed;
+    top: 80px; /* ヘッダーの高さ分ずらす */
+    left: 0;
+    width: 100%;
+    height: calc(100% - 80px); /* ヘッダーの高さを引いて適用 */
+    background-color: black;
+    z-index: 10;
+    animation: fadeout 5s ease-in-out forwards;
+}
+
+/* フェードアウト（黒い画面が消える） */
+@keyframes fadeout {
+    0% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+}
 .slidebox{
     height: 800px;
     width: 100%;
@@ -32,40 +49,38 @@
     -webkit-animation-delay: 20s;
     animation-delay: 20s;
 }
-@keyframes anime{
-    0%{
-    opacity: 0;
+@keyframes anime {
+    0% {
+        opacity: 0;
     }
-    30%{
-    opacity: 1;
+    10% {
+        opacity: 1;
     }
-    35%{
-    opacity: 1;
+    30% {
+        opacity: 1;
     }
-    50%{
-    opacity: 0;
-    z-index: 9;
+    40% {
+        opacity: 0;
     }
-    100%{
-    opacity: 0;
+    100% {
+        opacity: 0;
     }
 }
-@-webkit-keyframes anime{
-    0%{
-    opacity: 0;
+@-webkit-keyframes anime {
+    0% {
+        opacity: 0;
     }
-    30%{
-    opacity: 1;
+    10% {
+        opacity: 1;
     }
-    35%{
-    opacity: 1;
+    30% {
+        opacity: 1;
     }
-    50%{
-    opacity: 0;
-    z-index: 9;
+    40% {
+        opacity: 0;
     }
-    100%{
-    opacity: 0;
+    100% {
+        opacity: 0;
     }
 }
 

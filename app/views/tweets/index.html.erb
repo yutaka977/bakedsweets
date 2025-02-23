@@ -1,31 +1,64 @@
 <h3>投稿検索</h3>
-<%= search_form_for @q  do |f| %>
-    <%= f.label :body_cont, '店名' %>
-    <%= f.search_field :body_cont %>
-    <%= f.label :type_id_eq, '種類' %>
-    <%= f.collection_select(:type_id_eq, Type.all, :id, :name, { prompt: '選択してください' }, { class: 'form-select' }) %>
-    <%= f.submit "検索" %></p>
-<% end %>
+<div class="search-container">
+  <%= search_form_for @q, html: { class: "search-form" } do |f| %>
+    
+    <!-- 種類選択（種類） -->
+    <div class="search-category">
+      <%= f.collection_select(:type_id_eq, Type.all, :id, :name, { prompt: '種類を選択' }, { class: 'form-select' }) %>
+    </div>
+    
+    <!-- 検索ボックス -->
+    <div class="search-box">
+      <%= f.search_field :body_cont, placeholder: "検索したい店名を入力", class: "search-input" %>
+    </div>
+
+    <!-- 検索ボタン -->
+<div class="search-button">
+  <button type="submit" class="search-submit">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+</div>
+
+  <% end %>
+</div>
 <h3>投稿一覧</h3>
-<div class="wrapper">
+
 <div class="tweets-container">
-  <% @tweets.reverse_each do |t| %>
-    <div class="tweet">  
+<% @tweets.reverse_each do |t| %>
+  <div class="tweet">  
+    <%= link_to tweet_path(t.id) do %>
+      <div class='image-field'>
         <% if t.images.attached? %>
           <% image = t.images.first %>
-      <%= link_to  tweet_path(t.id) do %>
-      <div class='image-field'><%= image_tag image,width: 330, height: 240, 
-    class: "img-resize" %></div>
+          <%= image_tag image, width: 330, height: 240, class: "img-resize" %>
+        <% else %>
+          <%= image_tag "noimage.png", width: 330, height: 240, class: "img-resize" %>
         <% end %>
-        <% end %>
-      種類: <%= t.type.name %>
-      <br>
-      価格: <%= t.cost %>円
-      <br>
-      美味しさ:<%= t.taste %>
-      <br>
+      </div>
+    <% end %>
+      <div class="meta-info">
+      <div class="meta-item"><strong>種類</strong> <span><%= t.type.name %></span></div>
+
+      <div class="meta-item"><strong>価格</strong> <span><%= t.cost %>円</span></div>
+
+<div class="meta-item">
+  <strong>美味しさ</strong>
+  <div class="star-rating">
+    <% (1..5).each do |i| %>
+      <% if i <= t.taste %>
+        <%= image_tag "star-on.png", alt: "★", class: "star" %>
+      <% elsif i - 0.5 <= t.taste %>
+        <%= image_tag "star-half.png", alt: "☆", class: "star" %>
+      <% else %>
+        <%= image_tag "star-off.png", alt: "☆", class: "star" %>
+      <% end %>
+    <% end %>
+    <span class="rating-score"><%= t.taste %> / 5.0</span>
+  </div>
+</div>
+
 いいね 
-          <% if user_signed_in? %>
+    <% if user_signed_in? %>
       <% if current_user.already_liked?(t) %>
         <%= link_to tweet_like_path(id: t.id, tweet_id: t.id), data: { turbo_method: :delete } do %>
             <i class="fas fa-heart"></i><%= t.likes.count %>
@@ -39,13 +72,16 @@
         <i class="far fa-heart"></i><%= t.likes.count %>
     <% end %>
     </div>
-  <% end %>
+  
 </div>
+<% end %>
 </div>
 
 
 
-<div id='map'></div>
+
+
+<div id='map' calss=indexmap></div>
 
 <style>
 #map {

@@ -1,14 +1,99 @@
-<h1>GeekTwitter</h1>
-<h3>Tweet詳細</h3>
-<div class="tweet">
-  <p><%= @tweet.body %></p>
-  投稿日時  <%= @tweet.created_at.strftime("%Y年%m月%d日 %H:%M:%S") %>
-  <p><%= @tweet.name %></p>
-  種類:    <span><%= @tweet.type.name %></span>
-  <p><%= @tweet.cost %></p>
+<div class="product-container">
+  <!-- 左側の小さい画像一覧 -->
+  <div class="thumbnail-container">
+    <% @tweet.images.each_with_index do |image, index| %>
+      <%= image_tag image, class: "thumbnail", data: { target: "image#{index}" } %>
+    <% end %>
+  </div>
 
+<div class="info-box" style="background-image: url(<%= asset_path("showbackground.png") %>);">
+  <div class="content-container">
+    <div class="image-containershow">
+      <% if @tweet.present? && @tweet.images.attached? %>
+      <% main_image = @tweet.images.first %>
+      <%= image_tag main_image, class: "tweet-image", id: "main-display" %>
+      <% else %>
+        <p>画像がありません</p>
+      <% end %>
+    </div>
+    <div class="text-content">
+      <div class="showtweet">
+  店名：<%= @tweet.body %>
+
+  <p><%= @tweet.name %></p>
+  種類：    <span><%= @tweet.type.name %></span>
+  <br>
+  価格：<%= @tweet.cost %>円
+  <br>
+  評価
+  <br>
+  <div class="meta-item">
+  <strong>美味しさ</strong>
+  <div class="star-rating">
+    <% (1..5).each do |i| %>
+      <% if i <= @tweet.taste %>
+        <%= image_tag "star-on.png", alt: "★", class: "star" %>
+      <% elsif i - 0.5 <= @tweet.taste %>
+        <%= image_tag "star-half.png", alt: "☆", class: "star" %>
+      <% else %>
+        <%= image_tag "star-off.png", alt: "☆", class: "star" %>
+      <% end %>
+    <% end %>
+    <span class="rating-score"><%= @tweet.taste %> / 5.0</span>
+  </div>
+</div>
+
+  <div class="meta-item">
+  <strong>価格</strong>
+  <div class="star-rating">
+    <% (1..5).each do |i| %>
+      <% if i <= @tweet.evaluationcost %>
+        <%= image_tag "star-on.png", alt: "★", class: "star" %>
+      <% elsif i - 0.5 <= @tweet.evaluationcost %>
+        <%= image_tag "star-half.png", alt: "☆", class: "star" %>
+      <% else %>
+        <%= image_tag "star-off.png", alt: "☆", class: "star" %>
+      <% end %>
+    <% end %>
+    <span class="rating-score"><%= @tweet.evaluationcost %> / 5.0</span>
+  </div>
+</div>
+
+  <div class="meta-item">
+  <strong>アクセス</strong>
+  <div class="star-rating">
+    <% (1..5).each do |i| %>
+      <% if i <= @tweet.access %>
+        <%= image_tag "star-on.png", alt: "★", class: "star" %>
+      <% elsif i - 0.5 <= @tweet.access %>
+        <%= image_tag "star-half.png", alt: "☆", class: "star" %>
+      <% else %>
+        <%= image_tag "star-off.png", alt: "☆", class: "star" %>
+      <% end %>
+    <% end %>
+    <span class="rating-score"><%= @tweet.access %> / 5.0</span>
+  </div>
+</div>
   <p><%= @tweet.evaluation %></p>
 </div>
+    </div>
+  </div>
+</div>
+
+<div class="showmap" data-lat="<%= @tweet.lat %>" data-lng="<%= @tweet.lng %>"></div>
+
+
+
+</div>
+
+  <br>
+  投稿日時：<%= @tweet.created_at.strftime("%Y年%m月%d日 %H:%M") %>
+
+
+
+
+<h3>Tweet詳細</h3>
+
     <% if user_signed_in? %>
       <% if current_user.already_liked?(@tweet) %>
         <%= link_to tweet_like_path(id: @tweet.id, tweet_id: @tweet.id), data: { turbo_method: :delete } do %>
@@ -28,34 +113,50 @@
       <% end %> 
 </div>
 
-<div id='map'></div>
 
-<style>
-#map {
-  height: 600px;
-  width: 100%;
-}
-</style>
 
 <!-- js部分 -->
 <script>
-//初期マップの設定
-let map
-let marker
-function initMap(){
-  geocoder = new google.maps.Geocoder()
+document.addEventListener("turbo:load", function () {
+  console.log("Turbo Load: Google Maps 初期化");
+  initMap();
+});
 
-  map = new google.maps.Map(document.getElementById('map'), {
-    center:  {lat: <%= @tweet.lat %>, lng: <%= @tweet.lng %>},
+function initMap() {
+  console.log("Google Maps の initMap が実行されました");
+
+  // `.showmap` クラスを持つ要素を取得
+  const mapElement = document.querySelector(".showmap");
+  if (!mapElement) {
+    console.error("Googleマップの要素 (`.showmap`) が見つかりません！");
+    return;
+  }
+
+  // `data-*` 属性から緯度と経度を取得
+  const lat = parseFloat(mapElement.dataset.lat);
+  const lng = parseFloat(mapElement.dataset.lng);
+
+  if (isNaN(lat) || isNaN(lng)) {
+    console.error("緯度または経度の値が無効です:", lat, lng);
+    return;
+  }
+
+  // Google Maps の初期化
+  const map = new google.maps.Map(mapElement, {
+    center: { lat: lat, lng: lng },
     zoom: 15,
   });
 
-   marker = new google.maps.Marker({
-    position:  {lat: <%= @tweet.lat %>, lng: <%= @tweet.lng %>},
-    map: map
+  // マーカーを設定
+  new google.maps.Marker({
+    position: { lat: lat, lng: lng },
+    map: map,
   });
 }
+
+
 </script>
+
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['YOUR_API_KEY'] %>&callback=initMap" async defer></script>
 <h2>いいねしたユーザー</h2>
 <% @tweet.liked_users.each do |user| %>
@@ -84,5 +185,32 @@ function initMap(){
 </div>
 
 
+<script>
+document.addEventListener("turbo:load", function () {
+  console.log("JavaScriptが読み込まれました！（Turbo対応）");
 
+  const thumbnails = document.querySelectorAll(".thumbnail");
+  const mainImage = document.getElementById("main-display");
+
+  if (!mainImage) {
+    console.error("メイン画像の要素 (`#main-display`) が見つかりません！");
+    return;
+  }
+
+  if (thumbnails.length === 0) {
+    console.error("サムネイル画像が見つかりません！");
+    return;
+  }
+
+  thumbnails.forEach((thumbnail) => {
+    console.log("サムネイル画像取得:", thumbnail.src);
+
+    thumbnail.addEventListener("mouseover", function () {
+      console.log("マウスが画像に乗りました:", this.src);
+      mainImage.src = this.src; // ホバーした画像をメイン画像にセット
+    });
+  });
+});
+
+</script>
 <%= link_to "Tweet一覧に戻る", tweets_path %>
