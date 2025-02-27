@@ -1,3 +1,4 @@
+<div class="showbody">
 <div class="product-container">
   <!-- 左側の小さい画像一覧 -->
   <div class="thumbnail-container">
@@ -86,32 +87,51 @@
 
 </div>
 
-  <br>
+<div class="prefecture-container">
+  <%= image_tag "prefecture.png", class: "prefecture-image" %>
+  <p class="prefecture-label"><%= @tweet.prefecture.presence || "不明" %></p>
+</div>
+
   投稿日時：<%= @tweet.created_at.strftime("%Y年%m月%d日 %H:%M") %>
 
 
-
-
-<h3>Tweet詳細</h3>
-
-    <% if user_signed_in? %>
-      <% if current_user.already_liked?(@tweet) %>
-        <%= link_to tweet_like_path(id: @tweet.id, tweet_id: @tweet.id), data: { turbo_method: :delete } do %>
-            <i class="fas fa-heart"></i><%= @tweet.likes.count %>
-        <% end %>
-      <% else %>
-        <%= link_to tweet_likes_path(id: @tweet.id, tweet_id: @tweet.id), data: { turbo_method: :tweet }  do %>
-            <i class="far fa-heart"></i><%= @tweet.likes.count %>
-        <% end %>
-      <% end %>
-    <% else %>
-        <i class="far fa-heart"></i><%= @tweet.likes.count %>
+<% if user_signed_in? %>
+  <% if current_user.already_liked?(@tweet) %>
+    <%= link_to tweet_like_path(id: @tweet.id, tweet_id: @tweet.id), 
+        data: { turbo_method: :delete }, 
+        class: "like-button liked" do %>
+      <div class="like-link">
+        <i class="fas fa-heart"></i>
+        <span>いいね！ <%= @tweet.likes.count %></span>
+      </div>
     <% end %>
+  <% else %>
+    <%= link_to tweet_likes_path(id: @tweet.id, tweet_id: @tweet.id), 
+        data: { turbo_method: :post }, 
+        class: "like-button" do %>
+      <div class="like-link">
+        <i class="far fa-heart"></i>
+        <span>いいね！ <%= @tweet.likes.count %></span>
+      </div>
+    <% end %>
+  <% end %>
+<% else %>
+  <div class="like-button">
+    <div class="like-link">
+      <i class="far fa-heart"></i>
+      <span>いいね！ <%= @tweet.likes.count %></span>
+    </div>
+  </div>
+<% end %>
+</div>
+<br>
     <% if user_signed_in? && current_user.id == @tweet.user_id %>
   <%= link_to "編集する", edit_tweet_path(@tweet.id) %>
         <%= link_to "削除する", tweet_path(@tweet.id), data: { turbo_method: :delete }  %>
       <% end %> 
-</div>
+
+
+
 
 
 

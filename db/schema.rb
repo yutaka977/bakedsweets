@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_29_112336) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_24_083047) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -73,6 +73,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_29_112336) do
     t.float "taste"
     t.float "evaluationcost"
     t.float "access"
+    t.string "prefecture"
     t.index ["type_id"], name: "index_tweets_on_type_id"
   end
 

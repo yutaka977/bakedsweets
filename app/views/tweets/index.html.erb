@@ -1,82 +1,110 @@
 <h3>投稿検索</h3>
-<div class="search-container">
-  <%= search_form_for @q, html: { class: "search-form" } do |f| %>
-    
-    <!-- 種類選択（種類） -->
-    <div class="search-category">
-      <%= f.collection_select(:type_id_eq, Type.all, :id, :name, { prompt: '種類を選択' }, { class: 'form-select' }) %>
-    </div>
-    
-    <!-- 検索ボックス -->
+<%= search_form_for @q, url: tweets_path, method: :get do |f| %>
+  <div class="search-container">
+<div class="search-category search-prefecture">
+  <%= f.label :prefecture_eq, '都道府県' %>
+  <%= f.select :prefecture_eq, 
+    [["すべて", ""]] + [
+      ["北海道", "北海道"], ["青森県", "青森県"], ["岩手県", "岩手県"], ["宮城県", "宮城県"], ["秋田県", "秋田県"],
+      ["山形県", "山形県"], ["福島県", "福島県"], ["茨城県", "茨城県"], ["栃木県", "栃木県"], ["群馬県", "群馬県"],
+      ["埼玉県", "埼玉県"], ["千葉県", "千葉県"], ["東京都", "東京都"], ["神奈川県", "神奈川県"], ["新潟県", "新潟県"],
+      ["富山県", "富山県"], ["石川県", "石川県"], ["福井県", "福井県"], ["山梨県", "山梨県"], ["長野県", "長野県"],
+      ["岐阜県", "岐阜県"], ["静岡県", "静岡県"], ["愛知県", "愛知県"], ["三重県", "三重県"], ["滋賀県", "滋賀県"],
+      ["京都府", "京都府"], ["大阪府", "大阪府"], ["兵庫県", "兵庫県"], ["奈良県", "奈良県"], ["和歌山県", "和歌山県"],
+      ["鳥取県", "鳥取県"], ["島根県", "島根県"], ["岡山県", "岡山県"], ["広島県", "広島県"], ["山口県", "山口県"],
+      ["徳島県", "徳島県"], ["香川県", "香川県"], ["愛媛県", "愛媛県"], ["高知県", "高知県"], ["福岡県", "福岡県"],
+      ["佐賀県", "佐賀県"], ["長崎県", "長崎県"], ["熊本県", "熊本県"], ["大分県", "大分県"], ["宮崎県", "宮崎県"],
+      ["鹿児島県", "鹿児島県"], ["沖縄県", "沖縄県"]
+    ], {}, { class: 'form-selectprefecture' } 
+  %>
+</div>
+
+<div class="search-category search-type">
+  <%= f.label :type_id_eq, '種類' %>
+  <%= f.select :type_id_eq, 
+      [["すべて", ""]] + Type.all.order(:name).pluck(:name, :id), 
+      {}, 
+      { class: 'form-selecttype' } 
+  %>
+</div>
+
+
+
     <div class="search-box">
       <%= f.search_field :body_cont, placeholder: "検索したい店名を入力", class: "search-input" %>
     </div>
 
-    <!-- 検索ボタン -->
-<div class="search-button">
-  <button type="submit" class="search-submit">
-    <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-</div>
+    <div class="search-button">
+      <button type="submit" class="search-submit">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </div>
+  </div>
+<% end %>
 
-  <% end %>
-</div>
+
 <h3>投稿一覧</h3>
 
-<div class="tweets-container">
-<% @tweets.reverse_each do |t| %>
-  <div class="tweet">  
-    <%= link_to tweet_path(t.id) do %>
-      <div class='image-field'>
-        <% if t.images.attached? %>
-          <% image = t.images.first %>
-          <%= image_tag image, width: 330, height: 240, class: "img-resize" %>
-        <% else %>
-          <%= image_tag "noimage.png", width: 330, height: 240, class: "img-resize" %>
+
+<% if @tweets.present? %>
+  <div class="tweets-container">
+    <% @tweets.reverse_each do |t| %>
+      <div class="tweet">  
+        <%= link_to tweet_path(t.id) do %>
+          <div class='image-field'>
+            <% if t.images.attached? %>
+              <% image = t.images.first %>
+              <%= image_tag image, width: 330, height: 240, class: "img-resize" %>
+            <% else %>
+              <%= image_tag "noimage.png", width: 330, height: 240, class: "img-resize" %>
+            <% end %>
+          </div>
         <% end %>
+          <div class="meta-info">
+          <div class="meta-item"><strong>種類</strong> <span><%= t.type.name %></span></div>
+
+          <div class="meta-item"><strong>価格</strong> <span><%= t.cost %>円</span></div>
+
+          <div class="meta-item">
+            <strong>美味しさ</strong>
+            <div class="star-rating">
+              <% (1..5).each do |i| %>
+                <% if i <= t.taste %>
+                  <%= image_tag "star-on.png", alt: "★", class: "star" %>
+                <% elsif i - 0.5 <= t.taste %>
+                  <%= image_tag "star-half.png", alt: "☆", class: "star" %>
+                <% else %>
+                  <%= image_tag "star-off.png", alt: "☆", class: "star" %>
+                <% end %>
+              <% end %>
+              <span class="rating-score"><%= t.taste %> / 5.0</span>
+            </div>
+          </div>
+
+
+<% if user_signed_in? %>
+  <% if current_user.already_liked?(t) %>
+    <%= link_to tweet_like_path(id: t.id, tweet_id: t.id), data: { turbo_method: :delete }, class: "like-button-index" do %>
+      <i class="fas fa-heart liked-index"></i> <span><%= t.likes.count %></span>
+    <% end %>
+  <% else %>
+    <%= link_to tweet_likes_path(id: t.id, tweet_id: t.id), data: { turbo_method: :post }, class: "like-button-index" do %>
+      <i class="far fa-heart"></i> <span><%= t.likes.count %></span>
+    <% end %>
+  <% end %>
+<% else %>
+  <i class="far fa-heart"></i> <span><%= t.likes.count %></span>
+<% end %>
+
+
+        </div>
       </div>
     <% end %>
-      <div class="meta-info">
-      <div class="meta-item"><strong>種類</strong> <span><%= t.type.name %></span></div>
 
-      <div class="meta-item"><strong>価格</strong> <span><%= t.cost %>円</span></div>
-
-<div class="meta-item">
-  <strong>美味しさ</strong>
-  <div class="star-rating">
-    <% (1..5).each do |i| %>
-      <% if i <= t.taste %>
-        <%= image_tag "star-on.png", alt: "★", class: "star" %>
-      <% elsif i - 0.5 <= t.taste %>
-        <%= image_tag "star-half.png", alt: "☆", class: "star" %>
-      <% else %>
-        <%= image_tag "star-off.png", alt: "☆", class: "star" %>
-      <% end %>
-    <% end %>
-    <span class="rating-score"><%= t.taste %> / 5.0</span>
-  </div>
-</div>
-
-いいね 
-    <% if user_signed_in? %>
-      <% if current_user.already_liked?(t) %>
-        <%= link_to tweet_like_path(id: t.id, tweet_id: t.id), data: { turbo_method: :delete } do %>
-            <i class="fas fa-heart"></i><%= t.likes.count %>
-        <% end %>
-      <% else %>
-        <%= link_to tweet_likes_path(id: t.id, tweet_id: t.id), data: { turbo_method: :post }  do %>
-            <i class="far fa-heart"></i><%= t.likes.count %>
-        <% end %>
-      <% end %>
-    <% else %>
-        <i class="far fa-heart"></i><%= t.likes.count %>
-    <% end %>
-    </div>
-  
-</div>
+<% else %>
+  <p class="no-results">該当する投稿はありません。</p>
 <% end %>
-</div>
-
+  </div>
 
 
 

@@ -65,118 +65,160 @@
 
 
 <h2>Map</h2>
-<p>店名を入力し、検索を押すと位置情報の登録ができます。<p>
-<input id="address" type="textbox" placeholder="店名を入力してください">
+<input type="text" id="address" placeholder="住所を入力">
+<button type="button" id="search-address">🔍 住所検索</button>
 
-<input type="button" value="検索" onclick="codeAddress()">
-<p>マーカーをドラック＆ドロップで位置の調整ができます。<p>
-<div id='map'></div>
+<!-- 緯度・経度を自動入力する hidden input -->
+<input type="hidden" id="lat" name="tweet[lat]">
+<input type="hidden" id="lng" name="tweet[lng]">
 
-<style>
-#map {
-  height: 600px;
-  width: 600px;
-}
-</style>
+<!-- Google Maps (newmapクラス) -->
+<div class="newmap" data-lat="<%= @tweet.lat || 35.0223 %>" data-lng="<%= @tweet.lng || 135.9617 %>" style="height: 400px; width: 200px;"></div>
+
 
 <script>
-//初期マップの設定
-let map
-let marker
-function initMap(){
-  geocoder = new google.maps.Geocoder()
+// ✅ すべての JavaScript を turbo:load で実行
+document.addEventListener("turbo:load", function () {
+  console.log("🚀 Turbo Load: すべての JavaScript 初期化開始");
 
-  map = new google.maps.Map(document.getElementById('map'), {
-    center:  {lat: 35.0223, lng:135.9617},  //滋賀県草津市
-    zoom: 15,
-    
-  });
-}
-
-//検索後のマップ作成
-let geocoder
-let aft
-function codeAddress(){
-  let inputAddress = document.getElementById('address').value;
-  geocoder.geocode( { 'address': inputAddress}, function(results, status) {
-    if (status == 'OK') {
-        //マーカーが複数できないようにする
-        if (aft == true){
-            marker.setMap(null);
-        }
-
-        //新しくマーカーを作成する
-        map.setCenter(results[0].geometry.location);
-            marker = new google.maps.Marker({
-            map: map,
-            position: results[0].geometry.location,
-            draggable: true	// ドラッグ可能にする
-        });
-
-        //二度目以降か判断
-        aft = true
-
-        //検索した時に緯度経度を入力する
-        document.getElementById('lat').value = results[0].geometry.location.lat();
-        document.getElementById('lng').value = results[0].geometry.location.lng();
-
-        // マーカーのドロップ（ドラッグ終了）時のイベント
-        google.maps.event.addListener( marker, 'dragend', function(ev){
-            // イベントの引数evの、プロパティ.latLngが緯度経度
-            document.getElementById('lat').value = ev.latLng.lat();
-            document.getElementById('lng').value = ev.latLng.lng();
-        });
+  /** 🗺 Google Maps 初期化 **/
+  if (typeof google !== "undefined" && typeof google.maps !== "undefined") {
+    console.log("✅ Google Maps API はロード済み");
+    if (typeof window.initMap === "function") {
+      window.initMap();
     } else {
-      alert('該当する結果がありませんでした：' + status);
+      console.error("⚠️ initMap 関数が見つかりません！");
     }
-  });   
-}
+  } else {
+    console.warn("⚠️ Google Maps API がロードされていません。リロードが必要かも");
+  }
 
+  /** 🖼 画像切り替え（サムネイルホバー） **/
+  console.log("🖼 画像切り替え機能の初期化");
 
+  const thumbnails = document.querySelectorAll(".thumbnail");
+  const mainImage = document.getElementById("main-display");
 
-</script>
+  if (thumbnails.length > 0 && mainImage) {
+    thumbnails.forEach((thumbnail) => {
+      thumbnail.addEventListener("mouseover", function () {
+        console.log("🖼 画像切り替え:", this.src);
+        mainImage.src = this.src;
+      });
+    });
+  } else {
+    console.warn("⚠️ サムネイル画像またはメイン画像が見つかりません");
+  }
 
-<script type="text/javascript">
+  /** 📝 フォームの値をリアルタイム表示 **/
+  console.log("📝 フォーム入力値の表示を初期化");
 
-document.addEventListener("turbo:load", () => {
-  // 各range_fieldと対応する表示要素を設定
   const fields = [
-
-    { id: 'range-taste', spanId: 'current-value-taste' },
-    { id: 'range-evaluationcost', spanId: 'current-value-evaluationcost' },
-    { id: 'range-access', spanId: 'current-value-access' }
+    { id: "range-taste", spanId: "current-value-taste" },
+    { id: "range-evaluationcost", spanId: "current-value-evaluationcost" },
+    { id: "range-access", spanId: "current-value-access" },
   ];
 
-  // 汎用的に値を更新する関数
-  const setFieldValue = (fieldId, spanId) => {
-    const fieldElem = document.getElementById(fieldId);
+  fields.forEach(({ id, spanId }) => {
+    const fieldElem = document.getElementById(id);
     const spanElem = document.getElementById(spanId);
 
-    const updateValue = () => {
-      spanElem.innerText = `${fieldElem.value}`;
-    };
+    if (fieldElem && spanElem) {
+      fieldElem.addEventListener("input", function () {
+        spanElem.innerText = fieldElem.value;
+      });
 
-    // イベントリスナーの追加
-    fieldElem.addEventListener('input', updateValue);
+      spanElem.innerText = fieldElem.value;
+    } else {
+      console.warn(`⚠️ ${id} または ${spanId} が見つかりません`);
+    }
+  });
 
-    // 初期値の設定
-    updateValue();
-  };
-
-  // 各fieldについて処理を適用
-  fields.forEach(({ id, spanId }) => setFieldValue(id, spanId));
-});
-
+  /** 📍 位置情報入力の同期 **/
+  console.log("📍 位置情報入力の同期を設定");
 
   const inputBox = document.getElementById("address");
   const outputBox = document.getElementById("outputBox");
-  if (outputBox.value === "") {
-  inputBox.addEventListener("input", function () {
-    outputBox.value = inputBox.value;
+
+  if (inputBox && outputBox) {
+    inputBox.addEventListener("input", function () {
+      outputBox.value = inputBox.value;
+    });
+  } else {
+    console.warn("⚠️ 位置情報の入力ボックスが見つかりません");
+  }
+});
+
+/** 🗺 Google Maps 初期化 **/
+function initMap() {
+  console.log("🗺 Google Maps 初期化");
+
+  let mapElement = document.querySelector(".newmap"); // ✅ `id="map"` → `class="newmap"`
+  if (!mapElement) {
+    console.error("❌ 地図要素 (`.newmap`) が見つかりません");
+    return;
+  }
+
+  let lat = parseFloat(mapElement.dataset.lat) || 35.0223; // デフォルト: 滋賀県草津市
+  let lng = parseFloat(mapElement.dataset.lng) || 135.9617;
+
+  let map = new google.maps.Map(mapElement, {
+    center: { lat: lat, lng: lng },
+    zoom: 15,
   });
-};
+
+  let marker = new google.maps.Marker({
+    position: { lat: lat, lng: lng },
+    map: map,
+    draggable: true, // ✅ ドラッグ可能にする
+  });
+
+  // 📍 マーカーのドラッグで緯度・経度を取得
+  google.maps.event.addListener(marker, "dragend", function (event) {
+    document.getElementById("lat").value = event.latLng.lat();
+    document.getElementById("lng").value = event.latLng.lng();
+  });
+
+  // 📌 住所検索機能を追加
+  let geocoder = new google.maps.Geocoder();
+  document.getElementById("search-address").addEventListener("click", function () {
+    codeAddress(geocoder, map, marker);
+  });
+}
+
+// ✅ `window.initMap` に登録（Google API の `callback=initMap` で呼び出される）
+window.initMap = initMap;
+
+
+function codeAddress(geocoder, map, marker) {
+  let inputAddress = document.getElementById("address").value;
+
+  if (!inputAddress) {
+    alert("住所を入力してください！");
+    return;
+  }
+
+  geocoder.geocode({ address: inputAddress }, function (results, status) {
+    if (status === "OK") {
+      let location = results[0].geometry.location;
+      map.setCenter(location);
+      marker.setPosition(location);
+
+      // 📍 緯度経度をフォームに自動入力
+      document.getElementById("lat").value = location.lat();
+      document.getElementById("lng").value = location.lng();
+
+      console.log("✅ 位置情報登録成功:", location.lat(), location.lng());
+    } else {
+      alert("住所の検索に失敗しました: " + status);
+      console.error("❌ Google Maps Geocoding API エラー:", status);
+    }
+  });
+}
+
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['YOUR_API_KEY'] %>&callback=initMap" async defer></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['YOUR_API_KEY'] %>&callback=initMap&libraries=places"></script>
+
 
 <%= link_to "投稿一覧に戻る", tweets_path %>
 

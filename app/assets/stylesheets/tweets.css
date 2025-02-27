@@ -117,26 +117,27 @@ transition: 0.6s ease;
 
 /* 検索フォーム全体 */
 .search-container {
+  
   display: flex;
   justify-content: center; /* 中央揃え */
-  align-items: center;
+  align-items: flex-end;
   margin: 20px auto;
-  width: 480px; /* 検索フォームの幅 */
+  width: 490px; /* 検索フォームの幅 */
   background: #fff;
-
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-
+  overflow: hidden;
   
 }
 
 /* フォーム全体 */
 .search-form {
-  background-color: #007bff;
+
   display: flex;
   align-items: center;
   width: 100%;
   height: 36.3px;
   border-radius: 5px;
+  position: relative; /* 相対位置指定でプルダウンがずれないように */
 }
 
 /* カテゴリ選択 */
@@ -148,8 +149,8 @@ transition: 0.6s ease;
 
 /* プルダウン（セレクトボックス）のスタイル */
 /* 通常時のセレクトボックス */
-.form-select {
-  border: 1px solid #ccc; /* 初期の枠線の色 */
+.form-selectprefecture{
+  border: 2px solid #ccc; /* 初期の枠線の色 */
   padding: 9px 35px 9px 10px; /* 右側に余白を作る（▼を配置するため） */
   border-radius: 5px 0px 0px 5px;
   background-color: #f8f8f8;
@@ -161,20 +162,38 @@ transition: 0.6s ease;
   cursor: pointer;
   transition: border 0.3s ease, box-shadow 0.3s ease; /* なめらかな変化 */
 }
-
 /* フォーカス時の枠線の色変更 */
-.form-select:focus {
+.form-selectprefecture:focus {
+  border: 2px solid #ff9900; /* Amazonのオレンジ色 */
+  box-shadow: 0px 0px 5px rgba(255, 153, 0, 0.5); /* ぼんやりと光るエフェクト */
+  outline: none; /* デフォルトのフォーカス枠を消す */
+}
+
+.form-selecttype{
+  border: 2px solid #ccc; /* 初期の枠線の色 */
+  padding: 9px 35px 9px 10px; /* 右側に余白を作る（▼を配置するため） */
+  background-color: #f8f8f8;
+  font-size: 14px;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: border 0.3s ease, box-shadow 0.3s ease; /* なめらかな変化 */
+}
+.form-selecttype:focus {
   border: 2px solid #ff9900; /* Amazonのオレンジ色 */
   box-shadow: 0px 0px 5px rgba(255, 153, 0, 0.5); /* ぼんやりと光るエフェクト */
   outline: none; /* デフォルトのフォーカス枠を消す */
 }
 
 
+
 /* ▼（逆三角形）のアイコン */
 .search-category::after {
   content: "▼"; /* 矢印アイコン */
   position: absolute;
-  top: 50%;
+  top: 70%;
   right: 12px; /* 右端に配置 */
   transform: translateY(-50%);
   font-size: 14px;
@@ -193,18 +212,17 @@ transition: 0.6s ease;
 .search-input {
   width: 100%;
   padding: 9px;
-  border: 1px solid #ccc; /* 初期の枠線の色 */
+  border: 2px solid #ccc; /* 初期の枠線の色 */
   border-radius: 0px;
-  font-size: 14px;
-  transition: border 0.3s ease, box-shadow 0.3s ease; /* なめらかな変化 */
+  font-size: 13.5px;
   outline: none; /* デフォルトのフォーカス枠を消す */
-  border-left: none;
+
 }
 
 /* フォーカス時（クリックしたとき）のスタイル */
 .search-input:focus {
   border: 2px solid #ff9900; /* Amazon風のオレンジ色 */
-  box-shadow: 0px 0px 5px rgba(255, 153, 0, 0.5); /* ぼんやり光る */
+
 }
 
 
@@ -231,6 +249,34 @@ transition: 0.6s ease;
   background-color: #ffac33; /* 明るいオレンジ */
   box-shadow: 0px 0px 10px rgba(255, 172, 51, 0.8); /* 光るエフェクト */
 }
+
+/* 投稿一覧専用のいいねボタン */
+.like-button-index {
+  display: inline-block;
+  font-size: 20px;
+  color: #000000; 
+  transition: transform 0.2s ease;
+  text-decoration: none; /* リンクの下線を消す */
+  margin-left: 230px;
+  width:50px;
+}
+
+/* 既にいいねしているときのスタイル（投稿一覧用） */
+.like-button-index .liked-index {
+  color: red;
+}
+
+/* ホバー時のアニメーション */
+.like-button-index:hover {
+  color: red;
+  transform: scale(1.2); /* 少し大きくなる */
+}
+
+
+
+
+
+
 
 
 .info-box {
@@ -370,3 +416,71 @@ transition: 0.6s ease;
 .details a:hover {
     text-decoration: underline;
 }
+
+
+
+
+.prefecture-container {
+  position: relative; /* 相対配置 */
+  display: inline-block; /* 必要なサイズだけ確保 */
+  text-align: center; /* テキストを中央揃え */
+}
+
+.prefecture-label {
+  position: absolute; /* 画像の上に配置 */
+  top: 50%; /* 画像の50%の位置 */
+  left: 50%; /* 中央に配置 */
+  transform: translate(-50%, -50%); /* 完全に中央揃え */
+  font-size: 16px; /* 文字サイズ */
+  color: white; /* 文字色（背景が暗い場合） */
+
+  padding: 5px 10px; /* 読みやすくするための余白 */
+  border-radius: 5px; /* 角丸に */
+}
+
+.prefecture-image {
+  width: 150px; /* 画像の幅 */
+  height: auto; /* 縦横比を保持 */
+}
+
+
+.like-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: white; /* デフォルトの背景 */
+  border: 3px solid #ccc; /* 枠線 */
+  border-radius: 25px; /* 角丸 */
+  padding: 8px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.like-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* いいね済みのハートを赤くする */
+.liked .like-link i {
+  color: red;
+}
+
+/* ホバー時に背景を赤くする */
+.like-button:hover {
+  background-color: red; /* 赤色に変更 */
+  color: white; /* テキストを白に */
+}
+
+/* ホバー時のアイコン色を白に */
+.like-button:hover .like-link i {
+  color: white;
+}
+
